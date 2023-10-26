@@ -1,12 +1,15 @@
 #include "MerkleMain.h"   
+#include "OrderBookEntry.h"  
 #include <iostream>
 #include <string>
 #include <ios> //used to get stream size
 #include <limits> //used to get numeric limits
+#include <vector>
 
 MerkleMain::MerkleMain(){}; 
 void MerkleMain::init()
 {
+    loadOrderBook();
     int input;
     while(true)
     {
@@ -29,6 +32,18 @@ void MerkleMain::printMenu(){
     return;
 };
 
+void MerkleMain::loadOrderBook()
+{
+    OrderBookEntry obe1{ "2020/03/17 17:01:24.884492", "ETH/BTC", OrderBookType::bid, 10000, 0.005 };
+	OrderBookEntry obe2{ "2020/03/17 17:01:30.099017", "DOGE/BTC", OrderBookType::ask, 30000, 0.0000003 };
+	OrderBookEntry obe3{ "2023/03/17 17:01:30.099017", "DOGE/BTC", OrderBookType::ask, 5000, 0.00033 };
+
+	
+	orders.push_back(obe1);
+	orders.push_back(obe2);
+	orders.push_back(obe3);
+}
+
 void MerkleMain::printHelp(){
     std::cout << "This is the Help menu" << std::endl;
     std::cout << "Returning to Main menu \n" << std::endl;
@@ -38,6 +53,9 @@ void MerkleMain::printHelp(){
 void MerkleMain::printMarketStats(){
 
     std::cout << "Displaying the Exchange stats" << std::endl;
+
+    std::cout << "There are currently " << orders.size() << " entries in the OrderBook" << std::endl;
+
     std::cout << "Returning to Main menu \n" << std::endl;
     return;
 };
