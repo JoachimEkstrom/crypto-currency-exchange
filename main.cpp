@@ -9,15 +9,8 @@
 int main(int argc, char* argv[])
 {
 	
-	//MerkleMain app{};
-
-	std::cout << "\n	Welcome to the MerkleRex Crypto-exchange app!" << std::endl;
-	//app.init();
-
-	CSVReader::CSVReader();
-
-
-
+	MerkleMain app{};
+	app.init();
 
 
 

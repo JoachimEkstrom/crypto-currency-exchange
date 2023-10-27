@@ -5,6 +5,7 @@
 #include <ios> //used to get stream size
 #include <limits> //used to get numeric limits
 #include <vector>
+#include "CSVReader.h"
 
 MerkleMain::MerkleMain(){}; 
 void MerkleMain::init()
@@ -34,14 +35,9 @@ void MerkleMain::printMenu(){
 
 void MerkleMain::loadOrderBook()
 {
-    OrderBookEntry obe1{ "2020/03/17 17:01:24.884492", "ETH/BTC", OrderBookType::bid, 10000, 0.005 };
-	OrderBookEntry obe2{ "2020/03/17 17:01:30.099017", "DOGE/BTC", OrderBookType::ask, 30000, 0.0000003 };
-	OrderBookEntry obe3{ "2023/03/17 17:01:30.099017", "DOGE/BTC", OrderBookType::ask, 5000, 0.00033 };
-
+    
+    orders = CSVReader::readCSV("data.csv");
 	
-	orders.push_back(obe1);
-	orders.push_back(obe2);
-	orders.push_back(obe3);
 }
 
 void MerkleMain::printHelp(){
@@ -55,6 +51,21 @@ void MerkleMain::printMarketStats(){
     std::cout << "Displaying the Exchange stats" << std::endl;
 
     std::cout << "There are currently " << orders.size() << " entries in the OrderBook" << std::endl;
+    unsigned int bids = 0;
+    unsigned int asks = 0;
+
+    for (OrderBookEntry& e : orders)
+    {
+        if (e.type == OrderBookType::ask)
+        {
+            asks++;
+        }
+        if (e.type == OrderBookType::bid)
+        {
+            bids++;
+        }
+    }
+    std::cout << "The numbers of asks are: " << asks << " and the numbers of bids are: " << bids << std::endl;
 
     std::cout << "Returning to Main menu \n" << std::endl;
     return;
