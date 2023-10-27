@@ -9,7 +9,7 @@ class MerkleMain {
         void printMenu();
         void printHelp();
         void printMarketStats();
-        void enterOffer();
+        void enterAsk();
         void enterBid();
         void printWallet();
         void gotoNextTimeframe();
@@ -18,5 +18,5 @@ class MerkleMain {
 
         std::string currentTime;
         std::string previousTime;
-        OrderBook orderBook{"data copy.csv"};
+        OrderBook orderBook{"data.csv"};
 };

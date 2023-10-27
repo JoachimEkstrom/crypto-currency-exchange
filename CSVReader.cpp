@@ -51,11 +51,11 @@ std::vector<std::string> CSVReader::tokenise(std::string csvLine, char separator
     signed int start, end;
 
     start = csvLine.find_first_not_of(separator, 0);                                                // Look for the first char not beeing a separator and return the place. 
-                            
+
     do{                         
         end = csvLine.find_first_of(separator, start);                                              // From the start value look for next separator and save the place. If no separator is found this function returns string::npos. Will cause the while loop to end.  
         if (start == csvLine.length() || start == end) break;                                       // If the string is of zero length, leave this line directly. 
-                            
+
         if (end >= 0)                                                                               // If end is more than 0, we found a separator.
         {                           
             token = csvLine.substr(start, end-start);                                               // We then cut the a sub string out from start to end. Not that we care about where the start is. 
@@ -66,7 +66,7 @@ std::vector<std::string> CSVReader::tokenise(std::string csvLine, char separator
             token = csvLine.substr(start, csvLine.length() - start);                                // If we did not find another separator we probably found the end of the string. The substring is then from start to final position of the string - start. 
         }                           
         tokens.push_back(token);                                                                    // Add this token to our vector of tokens. 
-                            
+
         start = end + 1;                                                                            // Set start to the end value + 1. End is the separator, thus start will be the next char after that. 
     
     } while( end > 0);                                                  
@@ -90,8 +90,8 @@ OrderBookEntry CSVReader::stringsToOBE(std::vector<std::string> tokens)
         amount = std::stod(tokens[4]);
     }
     catch ( const std::exception& e){
-        std::cout << "Could not convert string to double " << tokens[3] << std::endl;
-        std::cout << "Could not convert string to double " << tokens[4] << std::endl;
+        std::cout << "CSVReader::stringsToOBE: Could not convert string to double " << tokens[3] << std::endl;
+        std::cout << "CSVReader::stringsToOBE: Could not convert string to double " << tokens[4] << std::endl;
         throw;                                                                                                          // Throw an error for the calling fuction. 
     }
 
@@ -105,3 +105,31 @@ OrderBookEntry CSVReader::stringsToOBE(std::vector<std::string> tokens)
     return obe; 
 
 };
+
+OrderBookEntry CSVReader::stringsToOBE( std::string priceString,
+                                        std::string amountString,
+                                        std::string timestamp,
+                                        std::string product,
+                                        OrderBookType orderType)
+{
+
+    double price, amount; 
+
+   try {                                                                                                               // If we have the correct amount of tokens. 
+        price = std::stod(priceString);
+        amount = std::stod(amountString);
+    }
+    catch ( const std::exception& e){
+        std::cout << "CSVReader::stringsToOBE: Could not convert string to double " << priceString << std::endl;
+        std::cout << "CSVReader::stringsToOBE: Could not convert string to double " << amountString << std::endl;
+        throw;                                                                                                          // Throw an error for the calling fuction. 
+    }
+
+    OrderBookEntry obe( timestamp,
+                        product,
+                        orderType,
+                        price,
+                        amount);
+
+    return obe; 
+}

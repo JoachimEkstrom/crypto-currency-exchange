@@ -80,9 +80,32 @@ void MerkleMain::printMarketStats(){
     return;
 };
 
-void MerkleMain::enterOffer(){
-    std::cout << "Placing an ask" << std::endl;
-    std::cout << "Returning to Main menu \n" << std::endl;
+void MerkleMain::enterAsk(){
+    std::cout << "Place an ask - enter the amount: product, price, amount e.g ETH/BTC, 10, 50" << std::endl;
+    std::string input;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');    // Clear the input buffer before we can get the input value. 
+    std::getline(std::cin, input); 
+
+    std::vector<std::string> tokens = CSVReader::tokenise(input, ',');
+    if (tokens.size() != 3)
+    {
+        std::cout << "Bad input, need exactly 3 inputs" << std::endl;
+
+    }
+    else
+    {
+        OrderBookEntry obe = CSVReader::stringsToOBE(
+            tokens[1],
+            tokens[2],
+            currentTime,
+            tokens[0],
+            OrderBookType::ask);    
+    }
+
+
+
+    std::cout << "You typed: " << input << std::endl;
+
     return;
 };
 
@@ -136,7 +159,7 @@ void MerkleMain::processUserOption(int userOption){
 
         case 3:
 
-            enterOffer();
+            enterAsk();
             break;
 
         case 4:

@@ -22,7 +22,7 @@ class OrderBook
         static double getHighPrice(std::vector<OrderBookEntry>& orders);
         /** Returns the low price*/
         static double getLowPrice(std::vector<OrderBookEntry>& orders);
-        /** Returns the change in precent since last timeframe*/
+        /** Takes the orders from this timefram and the orders from the prevoius timeframe and returns the change in precent since last timeframe for the price*/
         static double getPriceChange(std::vector<OrderBookEntry>& orders, std::vector<OrderBookEntry>& prevOrders);
 
         /** Returns the earliest time in the orderbook*/
