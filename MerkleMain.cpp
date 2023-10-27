@@ -1,17 +1,18 @@
 #include "MerkleMain.h"   
-#include "OrderBookEntry.h"  
 #include <iostream>
 #include <string>
-#include <ios> //used to get stream size
-#include <limits> //used to get numeric limits
+#include <ios> 
+#include <limits>
 #include <vector>
 #include "CSVReader.h"
 
 MerkleMain::MerkleMain(){}; 
 void MerkleMain::init()
 {
-    loadOrderBook();
     int input;
+    currentTime = orderBook.getEarliestTime();
+    previousTime = orderBook.getPreviousTime(currentTime);
+
     while(true)
     {
         printMenu();
@@ -28,17 +29,13 @@ void MerkleMain::printMenu(){
     std::cout << "	3: Place an ask" << std::endl;
     std::cout << "	4: Place an bid" << std::endl;
     std::cout << "	5: Print wallet" << std::endl;
-    std::cout << "	6: Continue \n" << std::endl;
+    std::cout << "	6: Continue" << std::endl;
+    std::cout << "  \tThe current time is: " << currentTime << std::endl;
+    std::cout << "  \tThe previous time was: " << previousTime << std::endl;
     
     return;
 };
 
-void MerkleMain::loadOrderBook()
-{
-    
-    orders = CSVReader::readCSV("data.csv");
-	
-}
 
 void MerkleMain::printHelp(){
     std::cout << "This is the Help menu" << std::endl;
@@ -48,26 +45,38 @@ void MerkleMain::printHelp(){
 
 void MerkleMain::printMarketStats(){
 
-    std::cout << "Displaying the Exchange stats" << std::endl;
-
-    std::cout << "There are currently " << orders.size() << " entries in the OrderBook" << std::endl;
-    unsigned int bids = 0;
-    unsigned int asks = 0;
-
-    for (OrderBookEntry& e : orders)
+    for ( std::string const p : orderBook.getKnownProducts())
     {
-        if (e.type == OrderBookType::ask)
-        {
-            asks++;
-        }
-        if (e.type == OrderBookType::bid)
-        {
-            bids++;
-        }
-    }
-    std::cout << "The numbers of asks are: " << asks << " and the numbers of bids are: " << bids << std::endl;
+        std::cout << "Product: " << p << std::endl;
+        std::vector<OrderBookEntry> entries = orderBook.getOrders(OrderBookType::ask, p, currentTime);
+        std::vector<OrderBookEntry> prevEntries = orderBook.getOrders(OrderBookType::ask, p, previousTime);
 
-    std::cout << "Returning to Main menu \n" << std::endl;
+        std::cout << "Asks seen: " << entries.size() << std::endl;
+        std::cout << "Max Ask seen: " << OrderBook::getHighPrice(entries) << std::endl;
+        std::cout << "Min Ask seen: " << OrderBook::getLowPrice(entries) << std::endl;
+        std::cout << "Price change since last timeframe: " << OrderBook::getPriceChange(entries, prevEntries) << "%\n" << std::endl;
+    }
+
+    // std::cout << "Displaying the Exchange stats" << std::endl;
+
+    // std::cout << "There are currently " << orders.size() << " entries in the OrderBook" << std::endl;
+    // unsigned int bids = 0;
+    // unsigned int asks = 0;
+
+    // for (OrderBookEntry& e : orders)
+    // {
+    //     if (e.type == OrderBookType::ask)
+    //     {
+    //         asks++;
+    //     }
+    //     if (e.type == OrderBookType::bid)
+    //     {
+    //         bids++;
+    //     }
+    // }
+    // std::cout << "The numbers of asks are: " << asks << " and the numbers of bids are: " << bids << std::endl;
+
+    // std::cout << "Returning to Main menu \n" << std::endl;
     return;
 };
 
@@ -90,7 +99,9 @@ void MerkleMain::printWallet(){
 };
 
 void MerkleMain::gotoNextTimeframe(){
-    std::cout << "Continue" << std::endl;
+    std::cout << "Going to the next timeframe" << std::endl;
+    currentTime = orderBook.getNextTime(currentTime);
+    previousTime = orderBook.getPreviousTime(currentTime);          // Keep track of the last timefram to calculate the price change. 
     std::cout << "Returning to Main menu \n" << std::endl;
     return;
 };
@@ -145,7 +156,7 @@ void MerkleMain::processUserOption(int userOption){
 
         default:
 
-            std::cout << "Please select an number between 1-6... \n" << std::endl;
+            std::cout << "\nPlease select an number between 1-6... \n" << std::endl;
             std::cout << "Returning to Main menu \n" << std::endl;
     }
 };

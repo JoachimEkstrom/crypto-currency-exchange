@@ -1,13 +1,11 @@
 #pragma once
-#include <vector>
-#include "OrderBookEntry.h"
+#include "OrderBook.h"
 class MerkleMain {
     public: 
         MerkleMain(); 
         void init();
 
     private:
-        void loadOrderBook();
         void printMenu();
         void printHelp();
         void printMarketStats();
@@ -18,6 +16,7 @@ class MerkleMain {
         int  getUserOption();
         void processUserOption(int userOption);
 
-
-        std::vector<OrderBookEntry> orders; // Creates the vector for Orderbook entries. 
+        std::string currentTime;
+        std::string previousTime;
+        OrderBook orderBook{"data copy.csv"};
 };

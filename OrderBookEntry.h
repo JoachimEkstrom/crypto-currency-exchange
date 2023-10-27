@@ -9,14 +9,14 @@ class OrderBookEntry
 	public:
 		OrderBookEntry( std::string _timestamp,
 						std::string _product,
-						OrderBookType _type,
+						OrderBookType _orderType,
 						double _price,
 						double _amount);
 
 		static OrderBookType	stringToOrderBookType(std::string s);
 		double					price;
 		std::string				timestamp; 
-		OrderBookType			type;
+		OrderBookType			orderType;
 		double					amount;
 		std::string				product;
 
