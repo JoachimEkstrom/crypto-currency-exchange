@@ -156,7 +156,17 @@ std::vector<OrderBookEntry> OrderBook::matchAsksToBids(std::string product, std:
         {
             if (bid.price >= ask.price)
             {
-                OrderBookEntry sale{timestamp, product, OrderBookType::sale, ask.price, 0};
+                OrderBookEntry sale{timestamp, product, OrderBookType::asksale, ask.price, 0};
+                if ( bid.username == "simuser")
+                {
+                    sale.username = "simuser"; 
+                    sale.orderType = OrderBookType::bidsale;
+                }
+                if ( ask.username == "simuser")
+                { 
+                    sale.username = "simuser"; 
+                    sale.orderType = OrderBookType::asksale;
+                }
 
                 // start comparing the bids and asks
 
@@ -183,7 +193,7 @@ std::vector<OrderBookEntry> OrderBook::matchAsksToBids(std::string product, std:
                 }
                 // If the bid amount is less than the ask amount. 
                 // In this case the bid will be consumed and the ask will still remain. Instead of breaking we will do a continue with the next bid.
-                if ( bid.amount < ask.amount)
+                if ( bid.amount < ask.amount && bid.amount > 0)
                 {
                     sale.amount = bid.amount;
                     sales.push_back(sale);

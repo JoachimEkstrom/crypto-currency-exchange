@@ -12,6 +12,8 @@ void MerkleMain::init()
     int input;
     currentTime = orderBook.getEarliestTime();
     previousTime = orderBook.getPreviousTime(currentTime);
+    wallet.insertCurrency("BTC", 10);
+
 
     while(true)
     {
@@ -100,16 +102,25 @@ void MerkleMain::enterAsk(){
                 tokens[2],
                 currentTime,
                 tokens[0],
-                OrderBookType::ask); 
+                OrderBookType::ask);
 
-            orderBook.insertOrder(obe);
+            obe.username = "simuser"; 
+
+            if(wallet.canFulfillOrder(obe))
+            {
+                std::cout << "Wallet looks ok, adding order" << std::endl;
+                orderBook.insertOrder(obe);
+            }
+            else
+            {
+                std::cout << "Not enough funds for processing order" << std::endl;   
+            }
+            
         } catch( const std::exception& e)
         {
             std::cout << "MerkleMain::enterAsk: Bad input" << std::endl;
         }   
     }
-
-
 
     std::cout << "You typed: " << input << std::endl;
 
@@ -117,13 +128,53 @@ void MerkleMain::enterAsk(){
 };
 
 void MerkleMain::enterBid(){
-    std::cout << "Placing an bid" << std::endl;
-    std::cout << "Returning to Main menu \n" << std::endl;
+    std::cout << "Place an bid - enter the amount: product, price, amount e.g ETH/BTC, 10, 50" << std::endl;
+    std::string input;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');    // Clear the input buffer before we can get the input value. 
+    std::getline(std::cin, input); 
+
+    std::vector<std::string> tokens = CSVReader::tokenise(input, ',');
+    if (tokens.size() != 3)
+    {
+        std::cout << "MerkleMain::enterBid: Bad input, need exactly 3 inputs" << std::endl;
+
+    }
+    else
+    {
+        try{
+            OrderBookEntry obe = CSVReader::stringsToOBE(
+                tokens[1],
+                tokens[2],
+                currentTime,
+                tokens[0],
+                OrderBookType::ask); 
+
+            obe.username = "simuser"; 
+
+            if(wallet.canFulfillOrder(obe))
+            {
+                std::cout << "Wallet looks ok, adding order" << std::endl;
+                orderBook.insertOrder(obe);
+            }
+            else
+            {
+                std::cout << "Not enough funds for processing order" << std::endl;   
+            }
+            
+        } catch( const std::exception& e)
+        {
+            std::cout << "MerkleMain::enterBid: Bad input" << std::endl;
+        }   
+    }
+
+    std::cout << "You typed: " << input << std::endl;
+
     return;
 };
 
 void MerkleMain::printWallet(){
     std::cout << "Displaying your lack of money in your wallet...." << std::endl;
+    std::cout << wallet.toString() << std::endl; 
     std::cout << "Returning to Main menu \n" << std::endl;
     return;
 };
@@ -137,6 +188,10 @@ void MerkleMain::gotoNextTimeframe(){
     for (OrderBookEntry& sale : sales)
     {
         std::cout << "Sale price: " << sale.amount << " amount: " << sale.amount << std::endl;
+        if (sale.username == "simuser")
+        {
+            wallet.processSale(sale);
+        }
     }
 
     currentTime = orderBook.getNextTime(currentTime);

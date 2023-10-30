@@ -1,5 +1,6 @@
 #pragma once
 #include "OrderBook.h"
+#include "Wallet.h"
 class MerkleMain {
     public: 
         MerkleMain(); 
@@ -19,4 +20,5 @@ class MerkleMain {
         std::string currentTime;
         std::string previousTime;
         OrderBook orderBook{"data.csv"};
+        Wallet wallet;
 };

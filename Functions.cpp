@@ -57,3 +57,45 @@ double computePriceSpread(std::vector<OrderBookEntry>& entries){
 	// std::cout << "Lowest price is: " << computeLowPrice(orders) << std::endl;
 	// std::cout << "Highest price is: " << computeHighPrice(orders) << std::endl;
 	// std::cout << "Price spread is: " << computePriceSpread(orders) << std::endl;
+
+
+
+
+
+
+
+	//         wallet.insertCurrency("BTC", 10);
+    //     wallet.insertCurrency("BTC", 30);
+    //     wallet.insertCurrency("USD", 100);
+        
+    // try{
+    //     wallet.insertCurrency("ETC", -50);
+    // }
+    // catch(const std::exception& e){
+    //     std::cout << e.what() << std::endl;
+
+    // }
+
+    // std::cout << wallet.toString() << std::endl; 
+
+
+
+    // wallet.removeCurrency("USD", 50);
+    // wallet.removeCurrency("BTC", 45);
+
+    // std::cout << wallet.toString() << std::endl; 
+
+    // try{
+    //     wallet.removeCurrency("ETC", -50);
+    // }
+    // catch(const std::exception& e){
+    //     std::cout << e.what() << std::endl;
+
+    // }
+
+    // std::cout << wallet.toString() << std::endl; 
+
+    // std::cout << "MerkleMain::init: The wallet contains 10 BTC or more? " << wallet.containsCurrency("BTC", 10) << std::endl; 
+    // std::cout << "MerkleMain::init: The wallet contains 10 USD or more? " << wallet.containsCurrency("USD", 10) << std::endl; 
+    // std::cout << "MerkleMain::init: The wallet contains 60 USD or more? " << wallet.containsCurrency("USD", 60) << std::endl; 
+     
