@@ -2,6 +2,7 @@
 #include "CSVReader.h"
 #include <map>
 #include <iostream>
+#include <algorithm>    // std::sort
 
 /** Constructor for reading a csvfile*/
 OrderBook::OrderBook(std::string filename)
@@ -126,4 +127,78 @@ double OrderBook::getPriceChange(std::vector<OrderBookEntry>& orders, std::vecto
     priceChange = ((currentMaxPrice - previousMaxPrice)/abs(previousMaxPrice))*100;         // Calculation the precent change since last timeframe. 
 
     return priceChange;
+}
+
+void OrderBook::insertOrder(OrderBookEntry& order)
+{
+    orders.push_back(order); 
+    std::sort(orders.begin(), orders.end(), OrderBookEntry::compareByTimestamp);
+}
+
+
+std::vector<OrderBookEntry> OrderBook::matchAsksToBids(std::string product, std::string timestamp)
+{
+    // Get the asks and bids. 
+    std::vector<OrderBookEntry> asks = getOrders(OrderBookType::ask, product, timestamp); 
+    std::vector<OrderBookEntry> bids = getOrders(OrderBookType::bid, product, timestamp); 
+
+    // completed sales
+    std::vector<OrderBookEntry> sales;
+
+    // sort all asks and bids on price before starting
+    std::sort(asks.begin(), asks.end(), OrderBookEntry::compareByPriceAsc);
+    std::sort(bids.begin(), bids.end(), OrderBookEntry::compareByPriceDesc);
+
+    // Main matching engine
+    for (OrderBookEntry& ask : asks)
+    {
+        for (OrderBookEntry& bid : bids)
+        {
+            if (bid.price >= ask.price)
+            {
+                OrderBookEntry sale{timestamp, product, OrderBookType::sale, ask.price, 0};
+
+                // start comparing the bids and asks
+
+                // If the bid amount and the ask amount is the same. 
+                // in this case the the bid and ask will clear out. 
+                if ( bid.amount == ask.amount)
+                {
+                    sale.amount = ask.amount;
+                    sales.push_back(sale);
+                    bid.amount = 0;
+                    break;
+                }
+
+                // If the bid amount is greater than the ask. 
+                // in this case the ask will be consumed and the bid will still exist to some extent. The bid will go to the next ask and try match with that.
+                // When breaking, we will exit this bid loop, and start with next ask in the outer loop, we will then hit this same bid again for processing.  
+                if ( bid.amount > ask.amount)
+                {
+                    sale.amount = ask.amount;
+                    sales.push_back(sale);
+                    bid.amount = bid.amount - ask.amount;
+                    break;
+                    
+                }
+                // If the bid amount is less than the ask amount. 
+                // In this case the bid will be consumed and the ask will still remain. Instead of breaking we will do a continue with the next bid.
+                if ( bid.amount < ask.amount)
+                {
+                    sale.amount = bid.amount;
+                    sales.push_back(sale);
+                    ask.amount = ask.amount - bid.amount;
+
+                    bid.amount = 0;
+
+                    continue;
+
+
+                }
+            }
+        }
+    }
+
+    return sales;
+
 }

@@ -31,6 +31,12 @@ class OrderBook
         std::string getNextTime(std::string timestamp);
         /** Returns the previous time in the orderbook, if there is no previous timestamp it returns the last timestamp in orders.*/
         std::string getPreviousTime(std::string timestamp);
+
+        void insertOrder(OrderBookEntry& order);
+
+        std::vector<OrderBookEntry> matchAsksToBids(std::string product, std::string timestamp);
+
+
     private:
 
         std::vector<OrderBookEntry> orders;

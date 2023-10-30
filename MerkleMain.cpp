@@ -89,17 +89,24 @@ void MerkleMain::enterAsk(){
     std::vector<std::string> tokens = CSVReader::tokenise(input, ',');
     if (tokens.size() != 3)
     {
-        std::cout << "Bad input, need exactly 3 inputs" << std::endl;
+        std::cout << "MerkleMain::enterAsk: Bad input, need exactly 3 inputs" << std::endl;
 
     }
     else
     {
-        OrderBookEntry obe = CSVReader::stringsToOBE(
-            tokens[1],
-            tokens[2],
-            currentTime,
-            tokens[0],
-            OrderBookType::ask);    
+        try{
+            OrderBookEntry obe = CSVReader::stringsToOBE(
+                tokens[1],
+                tokens[2],
+                currentTime,
+                tokens[0],
+                OrderBookType::ask); 
+
+            orderBook.insertOrder(obe);
+        } catch( const std::exception& e)
+        {
+            std::cout << "MerkleMain::enterAsk: Bad input" << std::endl;
+        }   
     }
 
 
@@ -123,6 +130,15 @@ void MerkleMain::printWallet(){
 
 void MerkleMain::gotoNextTimeframe(){
     std::cout << "Going to the next timeframe" << std::endl;
+    
+    std::vector<OrderBookEntry> sales =  orderBook.matchAsksToBids("ETH/BTC", currentTime);
+    std::cout << "Sales: " << sales.size() << std::endl; 
+
+    for (OrderBookEntry& sale : sales)
+    {
+        std::cout << "Sale price: " << sale.amount << " amount: " << sale.amount << std::endl;
+    }
+
     currentTime = orderBook.getNextTime(currentTime);
     previousTime = orderBook.getPreviousTime(currentTime);          // Keep track of the last timefram to calculate the price change. 
     std::cout << "Returning to Main menu \n" << std::endl;
